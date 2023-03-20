@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace APIServer
 {
-    public class RestaurantSearchApp
+    public class Restaurant
     {
 
     }

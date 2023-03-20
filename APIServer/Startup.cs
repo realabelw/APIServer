@@ -35,7 +35,7 @@ namespace APIServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
+            app.UseRouting(); //use the routing middle-ware
 
             app.UseAuthorization();
 
