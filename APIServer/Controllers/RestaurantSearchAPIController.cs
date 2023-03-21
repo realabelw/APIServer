@@ -11,11 +11,11 @@ namespace APIServer.Controllers
 {
     [ApiController]
     //[Route("api/[controller]")]
-    public class RestaurantController : ControllerBase
+    public class RestaurantSearchAPIController : ControllerBase
     {
-        private readonly ILogger<RestaurantController> _logger;
-        private const string restaurantsListCacheKey = "restaurantsList";
-        private const string restaurantIDCacheKey = "restaurantID";
+        private readonly ILogger<RestaurantSearchAPIController> _logger;
+        private const string restaurantsListCacheKey = "restaurantsList"; //to track the cache item for /api/restaurants
+        private const string restaurantIDCacheKey = "restaurantID"; //to track the cache item for /api/restaurants/{id}
         //this object is instantiated using dependency injecction which is registered
         //in services at the startup class [ConfigureServices()]
         private readonly IRestaurantBusinessLayer restaurantBusinessLayer;
@@ -28,7 +28,7 @@ namespace APIServer.Controllers
         private readonly IMemoryCache _cache;
 
         //using dependency injection, we get the instance of the businessLayer
-        public RestaurantController(IRestaurantBusinessLayer _businessLayer, ILogger<RestaurantController> logger, IMemoryCache cache)
+        public RestaurantSearchAPIController(IRestaurantBusinessLayer _businessLayer, ILogger<RestaurantSearchAPIController> logger, IMemoryCache cache)
         {
             //safety checks, we need to have a valid instance
             this.restaurantBusinessLayer = _businessLayer ?? throw new ArgumentNullException(nameof(_businessLayer));
@@ -37,15 +37,17 @@ namespace APIServer.Controllers
         }
 
         /// <summary>
-        /// this function returns the list of all restaurants that match the search.
-        /// using and object instantiated via dependency injection
-        /// the method is async to implement asynchronous calls
+        /// URL: api/restaurants
+        /// Required fields are location and term
+        /// This function returns the list of all restaurants that match the search.
+        /// Using and object instantiated via dependency injection
+        /// The method is async to implement asynchronous calls
         /// </summary>
         /// <param name="location"></param>
         /// <param name="term"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/{action}")] //api/restaurants
+        [Route("api/[action]/{location}/{term}")]
         public async Task<List<Restaurant>> Restaurants(string location, string term)
         {
             //return restaurantBusinessLayer.GetRestaurants(location, term);
@@ -87,12 +89,14 @@ namespace APIServer.Controllers
         }
 
         /// <summary>
-        /// this function returns the restaurant that matches a specific id.
+        /// URL: api/restaurants/{id}
+        /// Required field is {id}
+        /// This function returns the restaurant that matches a specific id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/{action}/{id}")] //route with dynamic parameter value => api/restaurants
+        [Route("api/[action]/{id}")] //route with dynamic parameter value => api/restaurants
         public async Task<Restaurant> Restaurants(string id)
         {
             return await Task.Run(() => restaurantBusinessLayer.GetRestaurant(id));

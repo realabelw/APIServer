@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,28 @@ namespace APIServer
 
             //register caching service
             services.AddMemoryCache();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Twelve Oaks Restaurant Search API",
+                    Description = "API Server v1.0.0",
+                    TermsOfService = new Uri("http://12os.co.uk/"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Abel Wodulo",
+                        Email = "abel.wodulo@gmail.com",
+                        Url = new Uri("https://www.linkedin.com/in/wodulo-abel-255663b1/"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "License Information",
+                        Url = new Uri("http://12os.co.uk/"),
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +81,11 @@ namespace APIServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Showing API V1");
             });
         }
     }
