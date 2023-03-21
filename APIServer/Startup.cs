@@ -25,6 +25,14 @@ namespace APIServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            //
+            //Register services: dependency injection.
+            //Interfaces are easily swapable
+            //
+            //services.AddTransient<RestaurantBusinessLayer>(); //everytime we get a new instance
+            //services.AddSingleton<RestaurantBusinessLayer>(); //same instance for every user
+            //
+            services.AddScoped<IRestaurantBusinessLayer, RestaurantBusinessLayer>(); //get a new instance per connection per user
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,10 +43,11 @@ namespace APIServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting(); //use the routing middle-ware
+            app.UseRouting(); //routing middleware, matches request to an endpoint.
 
             app.UseAuthorization();
 
+            //Execute the matched endpoint or route
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
