@@ -18,7 +18,7 @@ namespace APIServer.Controllers
         private readonly IRestaurantBusinessLayer restaurantBusinessLayer;
 
         //using dependency injection, we get the instance of the businessLayer
-        public RestaurantController(RestaurantBusinessLayer _businessLayer, ILogger<RestaurantController> logger)
+        public RestaurantController(IRestaurantBusinessLayer _businessLayer, ILogger<RestaurantController> logger)
         {
             this.restaurantBusinessLayer = _businessLayer;
             _logger = logger;

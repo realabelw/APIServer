@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static APIServer.DataAccessLayer.DataAccessLayer;
 
 namespace APIServer
 {
@@ -29,10 +30,16 @@ namespace APIServer
             //Register services: dependency injection.
             //Interfaces are easily swapable
             //
-            //services.AddTransient<RestaurantBusinessLayer>(); //everytime we get a new instance
-            //services.AddSingleton<RestaurantBusinessLayer>(); //same instance for every user
-            //
-            services.AddScoped<IRestaurantBusinessLayer, RestaurantBusinessLayer>(); //get a new instance per connection per user
+
+            //services.AddSingleton //one instance for all
+            //services.AddScoped //get a new instance per connection per user
+            //services.AddTransient //get a new instance everytime
+
+            services.AddScoped<IRestaurantDataAccessLayer, RestaurantDataAccessLayer>();
+            services.AddScoped<IRestaurantBusinessLayer, RestaurantBusinessLayer>();
+
+            //register caching service
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
