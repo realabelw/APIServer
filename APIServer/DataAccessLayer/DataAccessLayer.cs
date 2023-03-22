@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace APIServer.DataAccessLayer
@@ -13,52 +14,94 @@ namespace APIServer.DataAccessLayer
     {
         public interface IRestaurantDataAccessLayer
         {
-            Task<IBusinessSearchResult> GetRestaurants(string location, string term);
+            Task<IYelpAPISearchResult> GetRestaurants(string location, string term);
             Task<Restaurant> GetRestaurant(string id);
         }
 
         public class RestaurantDataAccessLayer : IRestaurantDataAccessLayer
         {
-            private string API_KEY;
-            private string API_Endpoint;
-            //private IBusinessSearchResult businessSearchInstance;
+            //This has moved to starup
+            //private string API_KEY;
+            //private string API_Endpoint;
 
-            public RestaurantDataAccessLayer(IConfiguration configuration)
+            //private IBusinessSearchResult businessSearchInstance;
+            private IHttpClientFactory httpClientFactory;
+            private string errorString;
+            private IYelpAPISearchResult searchResult;
+            private Restaurant restaurant;
+            private readonly ILogger<RestaurantDataAccessLayer> _logger;
+
+            public RestaurantDataAccessLayer(IConfiguration configuration, IHttpClientFactory _clientFactory, ILogger<RestaurantDataAccessLayer> logger)
             {
-                API_KEY = configuration.GetValue<string>("YelpFusionAPIKey");
-                API_Endpoint = configuration.GetValue<string>("YelpFusionAPIEndpoint");
-                //businessSearchInstance = _businessSearchInstance;
+                httpClientFactory = _clientFactory; //@inject httpClientFactory here
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+                //This has moved to starup
+                //API_KEY = configuration.GetValue<string>("YelpFusionAPIKey");
+                //API_Endpoint = configuration.GetValue<string>("YelpFusionAPIEndpoint");
             }
 
-            public async Task<IBusinessSearchResult> GetRestaurants(string location, string term)
+            public async Task<IYelpAPISearchResult> GetRestaurants(string location, string term)
             {
-                RestaurantSearchList result;
+                try
+                {
+                    //HttpClientFactory creates the client from the pool, this solves socket exhaustion causing overheads
+                    //Client settings are defined in startup configureservices method for BaseAddress, DefaultRequestHeaders
+                    var client = httpClientFactory.CreateClient("meta"); //named client instance: settings defined in startup class
 
-                string baseurl = $"{API_Endpoint}/search?term={term}&location={location}";
+                    HttpResponseMessage response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"search?term={term}&location={location}"));
 
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", API_KEY);
-                string jsonStr = await client.GetStringAsync(baseurl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _logger.Log(LogLevel.Information, "Trying to fetch the search result from Yelp Fusion API.");
+                        searchResult = await response.Content.ReadFromJsonAsync<BusinessSearchResult>();
+                        errorString = string.Empty;
+                        _logger.Log(LogLevel.Information, "Search result completed successfully.");
+                    }
+                    else
+                    {
+                        errorString = $"There was an error getting the result: {response.ReasonPhrase}";
+                        _logger.Log(LogLevel.Error, $"Error: {errorString}");
 
-                //result = JsonConvert.DeserializeObject<List<Restaurant>>(jsonStr).ToList();
-                result = JsonConvert.DeserializeObject<RestaurantSearchList>(jsonStr);
+                    }
 
-                return result ?? new RestaurantSearchList();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex.Message);
+                }
+
+                return searchResult ?? new BusinessSearchResult();
             }
 
             public async Task<Restaurant> GetRestaurant(string id)
             {
-                Restaurant result;
+                try
+                {
+                    var client = httpClientFactory.CreateClient("meta"); //named client instance: settings defined in startup class
 
-                string baseurl = $"{API_Endpoint}/{id}";
+                    HttpResponseMessage response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, id));
 
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", API_KEY);
-                string jsonStr = await client.GetStringAsync(baseurl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _logger.Log(LogLevel.Information, "Trying to fetch the search result from Yelp Fusion API.");
+                        restaurant = await response.Content.ReadFromJsonAsync<Restaurant>();
+                        errorString = string.Empty;
+                        _logger.Log(LogLevel.Information, "Search result completed successfully.");
+                    }
+                    else
+                    {
+                        errorString = $"There was an error getting the result: {response.ReasonPhrase}";
+                        _logger.Log(LogLevel.Error, $"Error: {errorString}");
 
-                result = JsonConvert.DeserializeObject<Restaurant>(jsonStr);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex.Message);
+                }
 
-                return result ?? new Restaurant();
+                return restaurant ?? new Restaurant();
             }
         }
     }

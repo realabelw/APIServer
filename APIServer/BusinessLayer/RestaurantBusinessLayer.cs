@@ -7,7 +7,7 @@ namespace APIServer
     public interface IRestaurantBusinessLayer
     {
         Task<Restaurant> GetRestaurant(string id);
-        Task<IBusinessSearchResult> GetRestaurants(string location, string term);
+        Task<IYelpAPISearchResult> GetRestaurants(string location, string term);
     }
 
     public class RestaurantBusinessLayer : IRestaurantBusinessLayer
@@ -20,7 +20,7 @@ namespace APIServer
             this.restaurantDataAccess = _restaurantDataAccess;
         }
 
-        public async Task<IBusinessSearchResult> GetRestaurants(string location, string term)
+        public async Task<IYelpAPISearchResult> GetRestaurants(string location, string term)
         {
             //get list of restaurants through dependency injection
             return await restaurantDataAccess.GetRestaurants(location, term);

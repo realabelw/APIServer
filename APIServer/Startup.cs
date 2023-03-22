@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using static APIServer.DataAccessLayer.DataAccessLayer;
 
@@ -40,6 +41,17 @@ namespace APIServer
             services.AddScoped<IRestaurantDataAccessLayer, RestaurantDataAccessLayer>();
             services.AddScoped<IRestaurantBusinessLayer, RestaurantBusinessLayer>();
             //services.AddTransient<IBusinessSearchResult, RestaurantSearchList>();
+
+            string apiKey = Configuration.GetValue<string>("YelpFusionAPIKey");
+            string endpoint = Configuration.GetValue<string>("YelpFusionAPIEndpoint");
+
+            //add dependency to httpclient default and named
+            services.AddHttpClient(); //default
+            services.AddHttpClient("meta", c =>
+                {
+                    c.BaseAddress = new Uri(endpoint);
+                    c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                });
 
             //register caching service
             services.AddMemoryCache();
@@ -86,7 +98,8 @@ namespace APIServer
             });
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => {
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Showing API V1");
             });
         }
