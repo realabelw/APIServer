@@ -1,21 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using static APIServer.DataAccessLayer.DataAccessLayer;
+using APIServer.Abstractions;
+using APIServer.Models;
 
-namespace APIServer
+namespace APIServer.Services
 {
-    public interface IRestaurantBusinessLayer
+    public class RestaurantSearchService : IRestaurantSearchService
     {
-        Task<Restaurant> GetRestaurant(string id);
-        Task<IYelpAPISearchResult> GetRestaurants(string location, string term);
-    }
-
-    public class RestaurantBusinessLayer : IRestaurantBusinessLayer
-    {
-        //Implement dependency Injection here to avoid tight coupling of the restaurant dataaccesslayer 
+        //Implement dependency Injection here to avoid tight coupling to the data access layer 
         //The business layer can take up any object of type IRestaurantDataAccessLayer for future proofing changes in the source 
         IRestaurantDataAccessLayer restaurantDataAccess;
-        public RestaurantBusinessLayer(IRestaurantDataAccessLayer _restaurantDataAccess)
+        public RestaurantSearchService(IRestaurantDataAccessLayer _restaurantDataAccess)
         {
             this.restaurantDataAccess = _restaurantDataAccess;
         }

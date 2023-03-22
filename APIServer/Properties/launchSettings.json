@@ -13,7 +13,7 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       //"launchUrl": "api/restaurants",
-      "launchUrl": "swagger/index.html",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -22,7 +22,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       //"launchUrl": "api/restaurants",
-      "launchUrl": "swagger/index.html",
+      "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

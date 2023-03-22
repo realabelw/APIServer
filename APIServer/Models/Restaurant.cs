@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace APIServer
+namespace APIServer.Models
 {
     /// <summary>
     /// Restaurant class to map to json result

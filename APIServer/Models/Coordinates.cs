@@ -1,4 +1,4 @@
-﻿namespace APIServer
+﻿namespace APIServer.Models
 {
     public class Coordinates
     {

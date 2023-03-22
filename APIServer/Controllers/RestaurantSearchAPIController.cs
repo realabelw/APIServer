@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using APIServer.Abstractions;
+using APIServer.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,15 +12,15 @@ using System.Threading.Tasks;
 namespace APIServer.Controllers
 {
     [ApiController]
-    //[Route("api/[controller]")]
+    //[Route("[controller]")]
     public class RestaurantSearchAPIController : ControllerBase
     {
         private readonly ILogger<RestaurantSearchAPIController> _logger;
         private const string restaurantsListCacheKey = "restaurantsList"; //to track the cache item for /api/restaurants
         private const string restaurantIDCacheKey = "restaurantID"; //to track the cache item for /api/restaurants/{id}
-        //this object is instantiated using dependency injecction which is registered
-        //in services at the startup class [ConfigureServices()]
-        private readonly IRestaurantBusinessLayer restaurantBusinessLayer;
+
+        //this object is injected using dependency injecction in the startup class [ConfigureServices()]
+        private readonly IRestaurantSearchService restaurantBusinessLayer;
 
         //manage concurrent cache access
         //using the slim because the wait times are expected to be very short.
@@ -28,7 +30,7 @@ namespace APIServer.Controllers
         private readonly IMemoryCache _cache;
 
         //using dependency injection, we get the instance of the businessLayer
-        public RestaurantSearchAPIController(IRestaurantBusinessLayer _businessLayer, ILogger<RestaurantSearchAPIController> logger, IMemoryCache cache)
+        public RestaurantSearchAPIController(IRestaurantSearchService _businessLayer, ILogger<RestaurantSearchAPIController> logger, IMemoryCache cache)
         {
             //safety checks, we need to have a valid instance
             this.restaurantBusinessLayer = _businessLayer ?? throw new ArgumentNullException(nameof(_businessLayer));

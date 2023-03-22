@@ -1,17 +1,14 @@
+using APIServer.Abstractions;
+using APIServer.DataAccessLayer;
+using APIServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using static APIServer.DataAccessLayer.DataAccessLayer;
 
 namespace APIServer
 {
@@ -38,9 +35,8 @@ namespace APIServer
             //services.AddScoped //get a new instance per connection per user
             //services.AddTransient //get a new instance everytime
 
-            services.AddScoped<IRestaurantDataAccessLayer, RestaurantDataAccessLayer>();
-            services.AddScoped<IRestaurantBusinessLayer, RestaurantBusinessLayer>();
-            //services.AddTransient<IBusinessSearchResult, RestaurantSearchList>();
+            services.AddScoped<IRestaurantDataAccessLayer, RestaurantDataAccessLayer>(); //register dependency on DAL
+            services.AddScoped<IRestaurantSearchService, RestaurantSearchService>(); //dependency on service
 
             string apiKey = Configuration.GetValue<string>("YelpFusionAPIKey");
             string endpoint = Configuration.GetValue<string>("YelpFusionAPIEndpoint");

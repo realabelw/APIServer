@@ -1,14 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using APIServer.Abstractions;
+using System.Collections.Generic;
 
-namespace APIServer
+namespace APIServer.Models
 {
-    public interface IYelpAPISearchResult
-    {
-        List<Restaurant> businesses { get; set; }
-        Region region { get; set; }
-        int total { get; set; }
-    }
-
     public class BusinessSearchResult : IYelpAPISearchResult
     {
         //enforcing interface properties for type safety
