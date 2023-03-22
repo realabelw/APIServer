@@ -18,6 +18,7 @@ namespace APIServer
     {
         public Startup(IConfiguration configuration)
         {
+            //configurations are automatically passed here
             Configuration = configuration;
         }
 
@@ -38,6 +39,7 @@ namespace APIServer
 
             services.AddScoped<IRestaurantDataAccessLayer, RestaurantDataAccessLayer>();
             services.AddScoped<IRestaurantBusinessLayer, RestaurantBusinessLayer>();
+            //services.AddTransient<IBusinessSearchResult, RestaurantSearchList>();
 
             //register caching service
             services.AddMemoryCache();

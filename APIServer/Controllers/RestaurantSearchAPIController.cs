@@ -67,7 +67,9 @@ namespace APIServer.Controllers
                     _logger.Log(LogLevel.Information, "Restaurants list not found in cache. Fetching from Yelp Fusion API.");
 
                     //lets have this on a seperate thread
-                    restaurants = await Task.Run(() => restaurantBusinessLayer.GetRestaurants(location, term));
+                    //restaurants = await Task.Run(() => restaurantBusinessLayer.GetRestaurants(location, term));
+                    var searchResult = await restaurantBusinessLayer.GetRestaurants(location, term);
+                    restaurants = searchResult.businesses;
 
                     //expire set cache item after 5 mins => 300s
                     //SlidingExpiration will expire the entry if it hasn't been accessed in 1 minute
@@ -96,10 +98,46 @@ namespace APIServer.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[action]/{id}")] //route with dynamic parameter value => api/restaurants
+        [Route("api/[action]/{id}")] //route with dynamic parameter value => id
         public async Task<Restaurant> Restaurants(string id)
         {
-            return await Task.Run(() => restaurantBusinessLayer.GetRestaurant(id));
+            //return await restaurantBusinessLayer.GetRestaurant(id);
+
+            _logger.Log(LogLevel.Information, "Trying to fetch the restaurant from cache.");
+            if (_cache.TryGetValue(restaurantIDCacheKey, out Restaurant restaurant))
+            {
+                _logger.Log(LogLevel.Information, "Restaurant found in cache.");
+            }
+            else
+            {
+                try
+                {
+                    //wait until the lock is released
+                    await semaphore.WaitAsync();
+
+                    _logger.Log(LogLevel.Information, "Restaurant not found in cache. Fetching from Yelp Fusion API.");
+
+                    //lets have this on a seperate thread
+                    //restaurants = await Task.Run(() => restaurantBusinessLayer.GetRestaurants(location, term));
+                    restaurant = await restaurantBusinessLayer.GetRestaurant(id);
+
+                    //expire set cache item after 5 mins => 300s
+                    //SlidingExpiration will expire the entry if it hasn't been accessed in 1 minute
+                    //AbsoluteExpiration will expire the entry after 5 minutes
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                            .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(300)) //expire after 5 mins
+                            .SetPriority(CacheItemPriority.Normal)
+                            .SetSize(1024);
+                    _cache.Set(restaurantIDCacheKey, restaurant, cacheEntryOptions);
+                }
+                finally
+                {
+                    semaphore.Release();
+                }
+            }
+
+            return restaurant;
         }
     }
 }

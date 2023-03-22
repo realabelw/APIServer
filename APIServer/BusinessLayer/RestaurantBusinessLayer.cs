@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using static APIServer.DataAccessLayer.DataAccessLayer;
 
 namespace APIServer
 {
     public interface IRestaurantBusinessLayer
     {
-        Restaurant GetRestaurant(string id);
-        List<Restaurant> GetRestaurants(string location, string term);
+        Task<Restaurant> GetRestaurant(string id);
+        Task<IBusinessSearchResult> GetRestaurants(string location, string term);
     }
 
     public class RestaurantBusinessLayer : IRestaurantBusinessLayer
@@ -19,13 +20,13 @@ namespace APIServer
             this.restaurantDataAccess = _restaurantDataAccess;
         }
 
-        public List<Restaurant> GetRestaurants(string location, string term)
+        public async Task<IBusinessSearchResult> GetRestaurants(string location, string term)
         {
             //get list of restaurants through dependency injection
-            return restaurantDataAccess.GetRestaurants(location, term);
+            return await restaurantDataAccess.GetRestaurants(location, term);
         }
 
-        public Restaurant GetRestaurant(string id)
+        public Task<Restaurant> GetRestaurant(string id)
         {
             //get list of restaurants through dependency injection
             return restaurantDataAccess.GetRestaurant(id);

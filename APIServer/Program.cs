@@ -16,6 +16,7 @@ namespace APIServer
             CreateHostBuilder(args).Build().Run();
         }
 
+        //the builder will load for us the settings
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
