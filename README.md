@@ -101,7 +101,7 @@ Prerequisites
 -----------------
 Unit Testing
 -----------------
-xUnit for .NET Framework, the test cases build upon AAA (Arrange, Act, and Assert)
+xUnit for .NET Framework. The test cases build upon AAA (Arrange, Act, and Assert)
 
 
 

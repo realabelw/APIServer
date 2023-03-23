@@ -65,7 +65,7 @@ namespace APIServer.DataAccessLayer
                 _logger.Log(LogLevel.Error, ex.Message);
             }
 
-            return searchResult ?? new BusinessSearchResult();
+            return searchResult ?? null; //return null for unit test case
         }
 
         public async Task<Restaurant> GetRestaurant(string id)

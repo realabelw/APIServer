@@ -1,5 +1,6 @@
 ﻿using APIServer.Abstractions;
 using APIServer.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,6 @@ using System.Threading.Tasks;
 namespace APIServer.Controllers
 {
     [ApiController]
-    //[Route("api/[action]")]
     [Route("api/restaurants")]
     public class RestaurantSearchAPIController : ControllerBase
     {
@@ -51,9 +51,16 @@ namespace APIServer.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{location}/{term}")]
-        public async Task<List<Restaurant>> Restaurants(string location, string term)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Restaurant>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Restaurants(string location, string term)
         {
             //return restaurantBusinessLayer.GetRestaurants(location, term);
+            if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(term))
+            {
+                return BadRequest();
+            }
 
             _logger.Log(LogLevel.Information, "Trying to fetch the list of restaurants from cache.");
             if (_cache.TryGetValue(restaurantsListCacheKey, out List<Restaurant> restaurants))
@@ -72,6 +79,10 @@ namespace APIServer.Controllers
                     //lets have this on a seperate thread
                     //restaurants = await Task.Run(() => restaurantBusinessLayer.GetRestaurants(location, term));
                     var searchResult = await restaurantBusinessLayer.GetRestaurants(location, term);
+
+                    if (searchResult == null)
+                        return NotFound();
+
                     restaurants = searchResult.businesses;
 
                     //expire set cache item after 5 mins => 300s
@@ -90,7 +101,12 @@ namespace APIServer.Controllers
                 }
             }
 
-            return restaurants;
+            //return restaurants == null ? NotFound() : Ok(restaurants); //this is supported in C# 8.0
+
+            if (restaurants == null)
+                return NotFound();
+            else
+                return Ok(restaurants);
         }
 
         /// <summary>
@@ -102,9 +118,15 @@ namespace APIServer.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{id}")] //route with dynamic parameter value => id
-        public async Task<Restaurant> Restaurants(string id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Restaurant))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Restaurants(string id)
         {
-            //return await restaurantBusinessLayer.GetRestaurant(id);
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
 
             _logger.Log(LogLevel.Information, "Trying to fetch the restaurant from cache.");
             if (_cache.TryGetValue(restaurantIDCacheKey, out Restaurant restaurant))
@@ -124,6 +146,9 @@ namespace APIServer.Controllers
                     //restaurants = await Task.Run(() => restaurantBusinessLayer.GetRestaurants(location, term));
                     restaurant = await restaurantBusinessLayer.GetRestaurant(id);
 
+                    if (restaurant == null)
+                        return NotFound();
+
                     //expire set cache item after 5 mins => 300s
                     //SlidingExpiration will expire the entry if it hasn't been accessed in 1 minute
                     //AbsoluteExpiration will expire the entry after 5 minutes
@@ -140,7 +165,12 @@ namespace APIServer.Controllers
                 }
             }
 
-            return restaurant;
+            //return restaurant;
+
+            if (restaurant == null)
+                return NotFound();
+            else
+                return Ok(restaurant);
         }
     }
 }
