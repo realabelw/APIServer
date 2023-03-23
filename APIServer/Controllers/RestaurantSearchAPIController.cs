@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 namespace APIServer.Controllers
 {
     [ApiController]
-    //[Route("[controller]")]
+    //[Route("api/[action]")]
+    [Route("api/restaurants")]
     public class RestaurantSearchAPIController : ControllerBase
     {
         private readonly ILogger<RestaurantSearchAPIController> _logger;
@@ -49,7 +50,7 @@ namespace APIServer.Controllers
         /// <param name="term"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[action]/{location}/{term}")]
+        [Route("{location}/{term}")]
         public async Task<List<Restaurant>> Restaurants(string location, string term)
         {
             //return restaurantBusinessLayer.GetRestaurants(location, term);
@@ -100,7 +101,7 @@ namespace APIServer.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[action]/{id}")] //route with dynamic parameter value => id
+        [Route("{id}")] //route with dynamic parameter value => id
         public async Task<Restaurant> Restaurants(string id)
         {
             //return await restaurantBusinessLayer.GetRestaurant(id);
