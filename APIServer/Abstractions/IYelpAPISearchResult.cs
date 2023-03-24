@@ -8,5 +8,7 @@ namespace APIServer.Abstractions
         List<Restaurant> businesses { get; set; }
         Region region { get; set; }
         int total { get; set; }
+        public string Error { get; set; }
+
     }
 }

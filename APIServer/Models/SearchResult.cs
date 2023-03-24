@@ -9,5 +9,6 @@ namespace APIServer.Models
         public List<Restaurant> businesses { get; set; }
         public int total { get; set; }
         public Region region { get; set; }
+        public string Error { get; set; }
     }
 }

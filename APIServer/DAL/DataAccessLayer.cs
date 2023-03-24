@@ -50,18 +50,20 @@ namespace APIServer.DataAccessLayer
                     _logger.Log(LogLevel.Information, "Trying to fetch the search result from Yelp Fusion API.");
                     searchResult = await response.Content.ReadFromJsonAsync<BusinessSearchResult>();
                     errorString = string.Empty;
+                    searchResult.Error = string.Empty;
                     _logger.Log(LogLevel.Information, "Search result completed successfully.");
                 }
                 else
                 {
                     errorString = $"There was an error getting the result: {response.ReasonPhrase}";
                     _logger.Log(LogLevel.Error, $"Error: {errorString}");
-
+                    searchResult.Error = errorString;
                 }
 
             }
             catch (Exception ex)
             {
+                searchResult.Error = ex.Message;
                 _logger.Log(LogLevel.Error, ex.Message);
             }
 
@@ -95,7 +97,7 @@ namespace APIServer.DataAccessLayer
                 _logger.Log(LogLevel.Error, ex.Message);
             }
 
-            return restaurant ?? new Restaurant();
+            return restaurant ?? null;
         }
     }
 }

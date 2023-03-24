@@ -50,6 +50,8 @@ namespace APIServerTest
             string term = _fixture.Create<string>(); //generate random string data
 
             var searchResultMock = _fixture.Create<BusinessSearchResult>(); //mock result returned from Yelp API list of restaurants
+            searchResultMock.Error = string.Empty; //this is only used in testing error returns
+            
             _serviceMock.Setup(x => x.GetRestaurants(location, term)).ReturnsAsync(searchResultMock); //the call to the service method returns the mock object
 
             var restaurants = searchResultMock.businesses;
@@ -64,6 +66,35 @@ namespace APIServerTest
             result.Should().NotBeNull();
             restaurants.Should().BeAssignableTo<List<Restaurant>>();
             result.Should().BeAssignableTo<OkObjectResult>();
+            //verify that our service method is getting called
+            _serviceMock.Verify(x => x.GetRestaurants(location, term), Times.Once());
+        }
+
+        [Fact]
+        public async Task GetRestaurants_ShouldReturnOkResponse_WhenValidRequest()
+        {
+            //Arrange
+            string location = _fixture.Create<string>(); //generate random string data
+            string term = _fixture.Create<string>(); //generate random string data
+
+            var searchResultMock = _fixture.Create<BusinessSearchResult>(); //mock result returned from Yelp API list of restaurants
+            searchResultMock.Error = string.Empty; //this is only used in testing error returns
+            
+            _serviceMock.Setup(x => x.GetRestaurants(location, term)).ReturnsAsync(searchResultMock); //the call to the service method returns the mock object
+
+            var restaurants = searchResultMock.businesses;
+
+            //Act
+            //this is the call to the controller method in a synchronous context
+            var result = await _controllerTest.Restaurants(location, term).ConfigureAwait(false);
+            //var result = await _controllerTest.Restaurants(location, term);
+
+            //Asset
+            //Assert.NotNull(restaurants);
+            result.Should().NotBeNull();
+            restaurants.Should().BeAssignableTo<List<Restaurant>>();
+            result.Should().BeAssignableTo<OkObjectResult>();
+            //result.Should().BeAssignableTo<ActionResult<List<Restaurant>>>();
 
             //verify that our service method is getting called
             _serviceMock.Verify(x => x.GetRestaurants(location, term), Times.Once());
@@ -76,7 +107,7 @@ namespace APIServerTest
             string location = _fixture.Create<string>(); //generate random string data
             string term = _fixture.Create<string>(); //generate random string data
 
-            BusinessSearchResult searchResultMock = null; //this is for a case the result is empty from Yelp API list of restaurants
+            BusinessSearchResult searchResultMock = null; //search result returned nothing from Yelp API
             _serviceMock.Setup(x => x.GetRestaurants(location, term)).ReturnsAsync(searchResultMock); //the call to the service method returns the mock object
 
             var restaurants = searchResultMock?.businesses;
@@ -95,7 +126,7 @@ namespace APIServerTest
         }
 
         [Fact]
-        public async Task GetRestaurants_ShouldReturnBadResponse_WhenRequestNotValid()
+        public async Task GetRestaurants_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty()
         {
             //Arrange
             string location = null; //supplied empty parameter values
@@ -120,6 +151,32 @@ namespace APIServerTest
             _serviceMock.Verify(x => x.GetRestaurants(location, term), Times.Never());
         }
 
+        [Fact]
+        public async Task GetRestaurants_ShouldReturnInternalServerError_WhenErrorReturnedFromAPI()
+        {
+            //Arrange
+            string location = _fixture.Create<string>(); //generate random string data
+            string term = _fixture.Create<string>(); //generate random string data
+
+            var searchResultMock = _fixture.Create<BusinessSearchResult>(); //mock result returned from Yelp API list of restaurants
+            searchResultMock.Error = _fixture.Create<string>();  // server error occurred fetching data from API
+
+            _serviceMock.Setup(x => x.GetRestaurants(location, term)).ReturnsAsync(searchResultMock); //the call to the service method returns the mock object
+
+            var restaurants = searchResultMock?.businesses;
+
+            //Act
+            //this is the call to the controller method in a synchronous context
+            var result = await _controllerTest.Restaurants(location, term).ConfigureAwait(false);
+            //var result = await _controllerTest.Restaurants(location, term);
+
+            //Asset
+            result.Should().NotBeNull();
+            result.Should().BeAssignableTo<StatusCodeResult>(); //should return 500 Internal Server Error
+            ((StatusCodeResult)result).StatusCode.Should().Be(500); //verify that the return code is 500
+            //verify that our service method is getting called
+            _serviceMock.Verify(x => x.GetRestaurants(location, term), Times.Once());
+        }
 
 
 
@@ -168,7 +225,7 @@ namespace APIServerTest
         }
 
         [Fact]
-        public async Task GetRestaurantsById_ShouldReturnBadResponse_WhenRequestNotValid()
+        public async Task GetRestaurantsById_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty()
         {
             //Arrange
             string id = null; //supplied empty parameter values

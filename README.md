@@ -1,11 +1,12 @@
 ASP.NET Core API Server (Restaurant Search API)
 -----------------
-This is an application that you can use to search for nearby restaurants using the Yelp Fusion API. This leverages .NET Core 3.1, and new routing API to enhance .NET performance.
+This is an application that you can use to search for nearby restaurants using the Yelp Fusion API. This is built using .NET Core 3.1.
 
 -----------------
 Project Structure
 -----------------
-
+│________________________________________________________________________________
+│
 ├APIServer
 ├── Controllers
 │   └── RestaurantSearchAPIController.cs
@@ -33,19 +34,26 @@ Project Structure
 │          └──publish
 ├── APIServer.csproj
 │
+├APIServerTest
+├── bin
+│   └── Debug
+├── Controllers
+│   └── RestaurantSearchAPIControllerTest.cs
+├── APIServer.csproj
+│
 ├APIServer.sln
 ├.vs
 ├.git
 ├.gitignore
 ├.gitattributes
 ├.README.md
+│________________________________________________________________________________
 
 ->Startup.cs is .NET Core Web API startup & path routing config
 ->Program.cs is .NET Core Web API environment variable mapping config
 ->configs folder will contain .NET Core Web API centralized config structure 
 ->appsettings.Development.json is .NET Core Web API development environment config
-->publish folder contains deployable app for hosting e.g. in IIS
-
+->publish folder contains deployable app ready for hosting e.g. in IIS server
 
 -----------------
 Setting Up
@@ -86,7 +94,7 @@ Notes
 -----------------
 ->Not configured for HTTPS
 ->Not implemented authorizations
-->Paging not supported
+->Paging not implemented
 ->The environment is set to Development
 
 -----------------
@@ -99,15 +107,41 @@ Prerequisites
 
 
 -----------------
-Unit Testing
+Unit Tests
 -----------------
-xUnit for .NET Framework. The test cases build upon AAA (Arrange, Act, and Assert)
+Packages used: 
+xUnit for .NET Framework. The test cases built upon AAA (Arrange, Act, and Assert)
+Moq - to mimic real class objects and minimize dependecies.
+Autofixture - to minimize the Arrange phase of your unit tests.
+FluentAssertions - for readable assertions to specify the expected outcome.
+
+Tests for Controller Actions
+----------------------------
+
+------------------------------------------------------------------------------------
+Method								Status 			Test Case Name
+------------------------------------------------------------------------------------
+api/restaurants/{location}/{term}		
+									OK				GetRestaurants_ShouldReturnOkResponse_WhenDataFound
+									OK				GetRestaurants_ShouldReturnNotFound_WhenDataNotFound
+									OK				GetRestaurants_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty
+									OK				GetRestaurants_ShouldReturnOkResponse_WhenValidRequest
+									OK				GetRestaurants_ShouldReturnInternalServerError_WhenErrorReturnedFromAPI
+									
+									
+
+api/restaurants/{id}		
+									OK				GetRestaurantsById_ShouldReturnOkResponse_WhenDataFound
+									OK				GetRestaurantsById_ShouldReturnNotFound_WhenDataNotFound
+									OK				GetRestaurantsById_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty
+									OK				GetRestaurantsById_ShouldReturnOkResponse_WhenValidRequest								
 
 
 
------------------
+
+----------------------------
 Yelp Fusion API Details
------------------
+----------------------------
 Client ID
 AGHG9OSiGMHxvHd3J6c1oQ
 

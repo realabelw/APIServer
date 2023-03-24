@@ -83,6 +83,9 @@ namespace APIServer.Controllers
                     if (searchResult == null)
                         return NotFound();
 
+                    if (!string.IsNullOrEmpty(searchResult.Error))
+                        return StatusCode(500);
+
                     restaurants = searchResult.businesses;
 
                     //expire set cache item after 5 mins => 300s
