@@ -72,20 +72,13 @@ $ dotnet restore
 Running the Application  
 -----------------  
 Option 1. Hosting in IIS Server. [folder: bin\Release\netcoreapp3.1\publish\]  
------------------  
+  
+Option 2. Development/Debugging : using Visual Endpoints  
+
 Endpoints  
 -----------------  
 http://{ip_address}:{port}/api/restaurants/{location}/{term}  
 http://{ip_address}:{port}/api/restaurants/{id}  
-  
-  
-  
-Option 2. Development/Debugging : using Visual Studio 2019  
------------------  
-Endpoints  
------------------  
-http://localhost:36114/api/restaurants/{location}/{term} e.g. http://localhost:36114/api/restaurants/usa/sushi  
-http://localhost:36114/api/restaurants/{id} e.g. http://localhost:36114/api/restaurants/123903  
   
   
 -----------------  
@@ -139,10 +132,9 @@ GetRestaurantsById_ShouldReturnOkResponse_WhenValidRequest
 Yelp Fusion API Details  
 ----------------------------  
 API Key
-<<in settings file>>  
+<appsettings>  
   
 Base Address  
------------  
 https://api.yelp.com/v3/businesses/  
   
 App Name  
