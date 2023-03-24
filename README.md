@@ -61,7 +61,7 @@ Setting Up
 To setup this project, you need to clone the git repo  
   
 $ git clone https://github.com/realabelw/apiserver.git  
-$ cd ├APIServer  
+$ cd APIServer  
   
 followed by  
   
@@ -119,34 +119,32 @@ Tests for Controller Actions
 ----------------------------  
   
 ------------------------------------------------------------------------------------  
-Method								Status 			Test Case Name  
+Method								
 ------------------------------------------------------------------------------------  
-api/restaurants/{location}/{term}		
-									OK				GetRestaurants_ShouldReturnOkResponse_WhenDataFound
-									OK				GetRestaurants_ShouldReturnNotFound_WhenDataNotFound
-									OK				GetRestaurants_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty
-									OK				GetRestaurants_ShouldReturnOkResponse_WhenValidRequest
-									OK				GetRestaurants_ShouldReturnInternalServerError_WhenErrorReturnedFromAPI
-									
-									
+api/restaurants/{location}/{term}  	
+  
+GetRestaurants_ShouldReturnOkResponse_WhenDataFound  
+GetRestaurants_ShouldReturnNotFound_WhenDataNotFound  
+GetRestaurants_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty  
+GetRestaurants_ShouldReturnOkResponse_WhenValidRequest  
+GetRestaurants_ShouldReturnInternalServerError_WhenErrorReturnedFromAPI  
+  
+  
+  
+api/restaurants/{id}  
+  
+GetRestaurantsById_ShouldReturnOkResponse_WhenDataFound  
+GetRestaurantsById_ShouldReturnNotFound_WhenDataNotFound  
+GetRestaurantsById_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty  
+GetRestaurantsById_ShouldReturnOkResponse_WhenValidRequest  
+ 
 
-api/restaurants/{id}		
-									OK				GetRestaurantsById_ShouldReturnOkResponse_WhenDataFound
-									OK				GetRestaurantsById_ShouldReturnNotFound_WhenDataNotFound
-									OK				GetRestaurantsById_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty
-									OK				GetRestaurantsById_ShouldReturnOkResponse_WhenValidRequest								
-
-  
-  
-  
 ----------------------------  
 Yelp Fusion API Details  
 ----------------------------  
-Client ID  
-AGHG9OSiGMHxvHd3J6c1oQ
-
 API Key
-<<in settings file>>
+<<in settings file>>  
+  
 Base Address  
 -----------  
 https://api.yelp.com/v3/businesses/  
