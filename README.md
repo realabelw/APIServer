@@ -69,9 +69,9 @@ $ dotnet restore
   
   
 -----------------  
-Development/Debugging/Deploying/Hosting the Application  
+Running the Application  
 -----------------  
-Option 1. Deploying or hosting in IIS Server. The published solution can be found in folder: bin\Release\netcoreapp3.1\publish\  
+Option 1. Hosting in IIS Server. [folder: bin\Release\netcoreapp3.1\publish\]  
 -----------------  
 Endpoints  
 -----------------  
