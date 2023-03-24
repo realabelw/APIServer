@@ -72,7 +72,6 @@ $ dotnet restore
 Development/Debugging/Deploying/Hosting the Application  
 -----------------  
 Option 1. Deploying or hosting in IIS Server. The published solution can be found in folder: bin\Release\netcoreapp3.1\publish\  
-  
 -----------------  
 Endpoints  
 -----------------  
@@ -115,13 +114,10 @@ Moq - to mimic real class objects and minimize dependecies.
 Autofixture - to minimize the Arrange phase of your unit tests.  
 FluentAssertions - for readable assertions to specify the expected outcome.  
   
-Tests for Controller Actions  
+Tests on Controller Actions  
 ----------------------------  
-  
-------------------------------------------------------------------------------------  
-Method								
-------------------------------------------------------------------------------------  
 api/restaurants/{location}/{term}  	
+----------------------------
   
 GetRestaurants_ShouldReturnOkResponse_WhenDataFound  
 GetRestaurants_ShouldReturnNotFound_WhenDataNotFound  
@@ -130,9 +126,9 @@ GetRestaurants_ShouldReturnOkResponse_WhenValidRequest
 GetRestaurants_ShouldReturnInternalServerError_WhenErrorReturnedFromAPI  
   
   
-  
 api/restaurants/{id}  
-  
+----------------------------
+
 GetRestaurantsById_ShouldReturnOkResponse_WhenDataFound  
 GetRestaurantsById_ShouldReturnNotFound_WhenDataNotFound  
 GetRestaurantsById_ShouldReturnBadResponse_WhenRequestNotValidInputIsNullOrEmpty  
